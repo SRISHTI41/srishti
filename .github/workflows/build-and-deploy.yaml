@@ -51,3 +51,10 @@ jobs:
           gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1
           sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" resources.yaml
           kubectl apply -f resources.yaml
+
+      - name: Get Service External IP
+        run: |
+          echo "Waiting for External IP..."
+          sleep 60  # Wait a bit for the LoadBalancer IP to be assigned
+          kubectl get svc spring-boot-app -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+
