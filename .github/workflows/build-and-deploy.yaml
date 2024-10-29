@@ -10,14 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Install the gcloud CLI
-        uses: google-github-actions/setup-gcloud@v0
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ secrets.GOOGLE_PROJECT }}
-          service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          export_default_credentials: true
           install_components: 'gke-gcloud-auth-plugin'
 
       - name: Build and push Docker image
@@ -25,8 +28,8 @@ jobs:
           GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev
-          docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT/demo/spring-boot-app:latest .
-          docker push us-central1-docker.pkg.dev/$GOOGLE_PROJECT/demo/spring-boot-app:latest
+          docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT/srishti/mine:latest .
+          docker push us-central1-docker.pkg.dev/$GOOGLE_PROJECT.srishti/mine:latest
 
       - name: Deploy to GKE
         env:
@@ -35,11 +38,3 @@ jobs:
           gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1
           sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" resources.yaml
           kubectl apply -f resources.yaml
-
-      - name: Get Service External IP
-        run: |
-          # Wait for LoadBalancer to get an IP
-          echo "Waiting for LoadBalancer External IP..."
-          sleep 60
-          # Retrieve the external IP
-          kubectl get svc spring-boot-app -o jsonpath='{.status.loadBalancer.ingress[0].ip}'

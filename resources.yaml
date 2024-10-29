@@ -14,21 +14,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spring-boot-app
+  name: mine
   labels:
-    app: spring-boot-app
+    app: mine
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: spring-boot-app
+      app: mine
   template:
     metadata:
       labels:
-        app: spring-boot-app
+        app: mine
     spec:
       containers:
-        - name: spring-boot-app
+        - name: mine
           image: us-central1-docker.pkg.dev/GOOGLE_PROJECT/srishti/mine:latest
           ports:
             - containerPort: 8080  # Match Spring Boot port

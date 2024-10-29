@@ -10,16 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Install the gcloud CLI
-        uses: google-github-actions/setup-gcloud@v0
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ secrets.GOOGLE_PROJECT }}
-          service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          export_default_credentials: true
+          install_components: 'gke-gcloud-auth-plugin'
 
-      - name: Build and push the Docker image
+      - name: Build and push Docker image
         env:
           GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
         run: |
