@@ -55,6 +55,6 @@ jobs:
       - name: Get Service External IP
         run: |
           echo "Waiting for External IP..."
-          sleep 60  # Wait a bit for the LoadBalancer IP to be assigned
+          sleep 120  # Wait a bit for the LoadBalancer IP to be assigned
           kubectl get svc spring-boot-app -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
 
