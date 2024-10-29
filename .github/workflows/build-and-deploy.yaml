@@ -19,7 +19,9 @@ jobs:
           java-version: '17'
 
       - name: Build with Maven
-        run: mvn clean package -DskipTests
+        run: |
+          mvn clean package -DskipTests
+           mvn clean package
 
       - name: Check target directory  # Debug step
         run: ls -al target
