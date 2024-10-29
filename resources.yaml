@@ -1,22 +1,7 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: spring-boot-app
-spec:
-  type: LoadBalancer
-  selector:
-    app: spring-boot-app
-  ports:
-    - port: 80
-      targetPort: 8080  # Spring Boot default port
-
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mine
-  labels:
-    app: mine
 spec:
   replicas: 1
   selector:
@@ -28,7 +13,21 @@ spec:
         app: mine
     spec:
       containers:
-        - name: mine
-          image: us-central1-docker.pkg.dev/GOOGLE_PROJECT/srishti/mine:latest
-          ports:
-            - containerPort: 8080  # Match Spring Boot port
+      - name: mine-container
+        image: us-central1-docker.pkg.dev/YOUR_PROJECT_ID/srishti/mine:latest
+        ports:
+        - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mine-service
+spec:
+  selector:
+    app: mine
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80           # External port
+    targetPort: 8080   # Port your application listens on
