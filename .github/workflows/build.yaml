@@ -1,4 +1,4 @@
-name: Build and Deploy Docker Image
+name: Build and Push Docker Image
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  deploy:
+  build:
     runs-on: self-hosted
     steps:
       - name: Checkout code
@@ -21,6 +21,9 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
+      - name: Check target directory
+        run: ls -al target
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
@@ -32,7 +35,7 @@ jobs:
           project_id: ${{ secrets.GOOGLE_PROJECT }}
           install_components: 'gke-gcloud-auth-plugin'
 
-      - name: Build and push Docker image with unique tag
+      - name: Build and Push Docker Image with Unique Tag
         env:
           GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
           IMAGE_TAG: ${{ github.sha }}
@@ -40,4 +43,3 @@ jobs:
           gcloud auth configure-docker us-central1-docker.pkg.dev
           docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT/srishti/mine:$IMAGE_TAG .
           docker push us-central1-docker.pkg.dev/$GOOGLE_PROJECT/srishti/mine:$IMAGE_TAG
-

@@ -35,6 +35,31 @@ jobs:
           project_id: ${{ secrets.GOOGLE_PROJECT }}
           install_components: 'gke-gcloud-auth-plugin'
 
+      # Optional: Create a Standard GKE Cluster (if it doesn’t already exist)
+      - name: Create GKE Cluster
+        env:
+          GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+        run: |
+          gcloud container clusters create standard-cluster \
+            --project=$GOOGLE_PROJECT \
+            --zone=us-central1-a \
+            --num-nodes=2 \
+            --enable-autoscaling \
+            --min-nodes=1 \
+            --max-nodes=3 \
+            --machine-type=e2-medium || echo "Cluster already exists, continuing..."
+
+      # Optional: Resize Node Pool
+      - name: Resize GKE Cluster Nodes
+        env:
+          GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+        run: |
+          gcloud container clusters resize standard-cluster \
+            --project=$GOOGLE_PROJECT \
+            --zone=us-central1-a \
+            --num-nodes=3 \
+            --quiet
+
       - name: Build and push Docker image with unique tag
         env:
           GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
@@ -49,7 +74,7 @@ jobs:
           GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          gcloud container clusters get-credentials autopilot-cluster-1 --region us-central1
+          gcloud container clusters get-credentials standard-cluster --zone=us-central1-a
           sed -i "s|GOOGLE_PROJECT|$GOOGLE_PROJECT|g" resources.yaml
           sed -i "s|IMAGE_TAG|$IMAGE_TAG|g" resources.yaml
           kubectl apply -f resources.yaml
