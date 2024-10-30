@@ -21,7 +21,7 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: Check target directory  # Debug step
+      - name: Check target directory  
         run: ls -al target
 
       - name: Authenticate to Google Cloud
