@@ -29,5 +29,5 @@ spec:
   type: LoadBalancer
   ports:
   - protocol: TCP
-    port: 80           # External port
+    port: 80           # External por
     targetPort: 8080   # Port your application listens on
