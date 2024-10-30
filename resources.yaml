@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: mine-container
-        image: us-central1-docker.pkg.dev/GOOGLE_PROJECT/srishti/mine:latest
+        image: us-central1-docker.pkg.dev/GOOGLE_PROJECT/srishti/mine:IMAGE_TAG
         ports:
         - containerPort: 8080
 
